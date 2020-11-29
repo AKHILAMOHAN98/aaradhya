@@ -1,0 +1,401 @@
+Test Configuration Parameters
+
+This class defines several constants that will be needed for running Test Cases
+against the various parts of CSSC.  Some of these values will need to be
+updated from time to time
+"""
+import os
+import sys
+import subprocess
+
+import HostInfo
+HOST_INFO = HostInfo.HostInfo()
+
+################################################################################
+#
+# Common Configuration Elements - used by all of automation
+#
+################################################################################
+class _config(object):
+    # Auto LOGON settings
+    LOGON_USER              = 'autobot'
+    LOGON_PASS              = 'pooh'
+    LOGON_DOMAIN            = 'jalebi'
+    LOGON_DOMAIN_DNS        = 'halloween.cisco.com'
+    DNS_DOMAIN              = 'cisco.com'
+
+    DUMMY_USER              = 'dummy'
+
+    # Adapter Settings
+    WIRED_AUTH_ADAPTER      = 'dot1x'
+    MACSEC_ADAPTER          = 'macsec'
+    if HOST_INFO.isMac():
+        MANAGEMENT_ADAPTER  = 'en0'
+        WIRELESS_ADAPTER    = 'en1'
+        cmd='networksetup -listallhardwareports | grep -c "Thunderbolt\|Bluetooth PAN"'
+        p=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT, shell=True)
+        (output, err) = p.communicate()
+        if int(output) > 0 :
+            TEST_NET_ADAPTER='en3'
+        else :
+            TEST_NET_ADAPTER='en2'
+        
+    elif HOST_INFO.isAndroid():
+        ANDROID_WIFI_ADAPTER= 'android-wifi'
+    else:
+        MANAGEMENT_ADAPTER  = 'management'
+        WIRELESS_ADAPTER    = 'wifi'
+        TEST_NET_ADAPTER    = 'testnet'
+
+    # Identities Settings
+    VALID_IDENTITY          = 'autobot'
+    VALID_PASSWORD          = 'pooh'
+    VALID_DIRTY_PASSWORD    = 'autom8me!'
+    RADIUS_ISE_PASSWORD     = 'pooh123:q'
+    INVALID_IDENTITY        = 'VincentVanGoogle'
+    INVALID_PASSWORD        = 'vErY-bAd-PaSs-123'
+
+    # Java Keystores
+    TRUSTED_CERTIFICATES_USER = 'trusted.certs'
+
+    # SVN settings
+    SVN_ENTRIES_FILE = '.svn/entries'
+
+    # Deathstar Information
+    DEATHSTAR_FQDN = 'deathstar.cisco.com'
+    DEATHSTAR_URL = 'http://%s/' % DEATHSTAR_FQDN
+    DEATHSTAR_IP = '10.86.112.19'
+    DEATHSTAR_INSIDE_FQDN = 'deathstar.inside.com'
+    DEATHSTAR_INSIDE_IP = '172.16.10.1'
+    DEATHSTAR_INSIDE_IP_V6 = 'fc31:420:c4:652:222:64ff:fe9a:2c64'
+
+    # Hebe Information - Server used in AC Performance Testbed
+    HEBE_FQDN           = 'hebe.cisco.com'
+    HEBE_MGMT_IP        = '10.86.100.167'
+    HEBE_INSIDE_FQDN    = 'hebe.inside.com'
+    HEBE_INSIDE_IP      = '172.20.56.2'
+    HEBE_TESTNET_IP     = '1.0.60.2'
+
+    # PINGABLE HOSTS
+    VLAN_34_HOST = '192.168.74.12'    # Also referred to as VLAN X
+    VLAN_34_HOST_V6 = 'fc00:0:0:34::1'
+
+    # RESULTS
+    RESULTS_DIR      = '\\\\deathstar\\groups\\QA\\SSC_automation_results\\pending\\'
+    RESULTS_USERNAME = 'automation'
+    RESULTS_PASSWORD = 'autom8me'
+
+    # MISCELLANEOUS
+    UNSAFE_URL       = 'http://www.eicar.org/download/eicar.com.txt'
+    BUILDS_URL       = DEATHSTAR_URL + 'disk/builds/'
+
+    class NETWORKS(object):
+        class Management(object):
+            Destination = '192.168.10.0'
+            DHCP = '192.168.28.11'
+            DNS = '192.168.28.11'
+            Domain = 'cisco.com'
+            Gateway = '192.168.10.1'
+            Netmask = '192.168.10.0'
+            Prefix = '192.168.10' # Can be 10.86.112 or 10.86.113
+            Vlan = '12'
+
+        class Inside(object):
+            Destination = '10.1.160.0'
+            DHCP = '10.1.150.6'
+            DNS = '10.1.150.5'
+            Domain = 'inside.com'
+            Gateway = '10.1.160.1'
+            Netmask = '255.255.224.0'
+            Prefix = '10.1'
+            Vlan = '652'
+
+        class InsideV4V6(object):
+            Destination = '10.1.160.0'
+            DHCP = '10.1.150.6'
+            DNS = '10.1.150.5'
+            Domain = 'inside.com'
+            Gateway = '10.1.160.1'
+            Netmask = '255.255.224.0'
+            Prefix = '10.1'
+            DestinationV6 = 'fc31:420:c4:652::'
+            DHCPV6 = 'fc32:4a:25:1::6'
+            DNSV6 = 'fc32:4a:25:1::5'
+            GatewayV6 = 'fc31:420:c4:652:::1'
+            NetmaskV6 = '64'
+            PrefixV6 = 'fc31:420:c4:652'
+            Vlan = '652'
+
+        class InsideV6(object):
+            DestinationV6 = 'fc31:420:c4:652::'
+            DHCPV6 = 'fc32:4a:25:1::6'
+            DNSV6 = 'fc32:4a:25:1::5'
+            Domain = 'inside.com'
+            GatewayV6 = 'fc31:420:c4:652:::1'
+            NetmaskV6 = '64'
+            PrefixV6 = 'fc31:420:c4:652'
+            Vlan = '652'
+
+        class Trusted(object):
+            Destination = '10.1.27.0'
+            DHCP = '10.1.27.10'
+            DNS = '10.1.27.10'
+            Domain = 'trusted.com'
+            Gateway = '10.1.27.1'
+            Netmask = '255.255.255.0'
+            Prefix = '10.1.27'
+            Vlan = '32'
+
+        class TrustedV4V6(object):
+            Destination = '10.1.23.0'
+            DHCP = '10.86.120.5'
+            DNS = '10.86.120.5'
+            Domain = 'trusted.com'
+            Gateway = '10.1.23.1'
+            Netmask = '255.255.255.0'
+            Prefix = '10.1.23'
+            Vlan = '332'
+            DestinationV6 = '2001:420:2c7f:1028::'
+            DHCPV6 = '2001:420:2c7f:1026:250:56ff:fe8e:7cb9'
+            DNSV6 = '2001:420:2C7F:1026:250:56FF:FE99:29'
+            GatewayV6 = '2001:420:2c7f:1028::1'
+            NetmaskV6 = '64'
+            PrefixV6 = '2001:420:2c7f:1028'
+
+        class TrustedV6(object):
+            DestinationV6 = '2001:420:2c7f:1025::'
+            DHCPV6 = '2001:420:2c7f:1026:250:56ff:fe8e:7cb9'
+            DNSV6 = '2001:420:2C7F:1026:250:56FF:FE99:29'
+            Domain = 'trusted.com'
+            GatewayV6 = '2001:420:2c7f:1025::1'
+            NetmaskV6 = '64'
+            PrefixV6 = '2001:420:2c7f:1025'
+            Vlan = '232'
+
+        class Untrusted(object):
+            Destination = '192.168.10.0'
+            DHCP = '192.168.28.11'
+            DNS = '192.168.28.11'
+            Domain = 'cisco.com'
+            Gateway = '192.168.10.1'
+            Netmask = '255.255.255.0'
+            Prefix = '192.168.10'
+            Vlan = '122'
+
+        class UntrustedV4V6(object):
+            Destination = '10.1.22.0'
+            DHCP = '10.86.120.5'
+            DNS = '10.86.120.5'
+            Domain = 'outside.com'
+            Gateway = '10.1.22.1'
+            Netmask = '255.255.255.0'
+            Prefix = '10.1.22'
+            Vlan = '322'
+            DestinationV6 = '2001:420:2c7f:1027::'
+            DHCPV6 = '2001:420:2c7f:1026:250:56ff:fe8e:7cb9'
+            DNSV6 = '2001:420:2C7F:1026:250:56FF:FE99:29'
+            GatewayV6 = '2001:420:2c7f:1027::1'
+            NetmaskV6 = '64'
+            PrefixV6 = '2001:420:2c7f:1027'
+
+        class UntrustedV6(object):
+            DestinationV6 = '2001:420:2c7f:1024::'
+            DHCPV6 = '2001:420:2c7f:1026:250:56ff:fe8e:7cb9'
+            DNSV6 = '2001:420:2C7F:1026:250:56FF:FE99:29'
+            Domain = 'outside.com'
+            GatewayV6 = '2001:420:2c7f:1024::1'
+            NetmaskV6 = '80'
+            PrefixV6 = '2001:420:2c7f:1024'
+            Vlan = '222'
+
+        class Latency(object):
+            Destination = '10.1.30.0'
+            DHCP = '10.86.120.5'
+            DNS = '10.86.120.5'
+            Domain = 'outside.com'
+            Gateway = '10.1.30.1'
+            Netmask = '255.255.255.0'
+            Prefix = '10.1.30'
+            Vlan = '396'
+            Emulator = 'escargot.cisco.com'
+
+        class Proxy(object):
+            Destination = '10.1.28.0'
+            DHCP = '10.86.100.10'
+            DNS = '10.86.100.10'
+            Domain = 'outside.com'
+            Gateway = '10.1.28.1'
+            Netmask = '255.255.255.0'
+            Prefix = '10.1.28'
+            Vlan = '33'
+            Proxy = '10.1.28.2:3128'
+            AuthProxy = '10.1.28.3:3128'
+
+        class Wifi(object):
+            Destination = '192.168.74.0'
+            DHCP = '192.168.74.10'
+            DNS = '192.168.74.10'
+            Domain = 'vlanx.com'
+            Gateway = '192.168.74.10'
+            Netmask = '255.255.255.0'
+            Prefix = '192.168.74'
+            Vlan = '34'
+            DestinationV6 = 'fc00:0:0:34::'
+            DHCPV6 = '2001:420:2c7f:1026:250:56ff:fe8e:7cb9'
+            DNSV6 = '2001:420:2C7F:1026:250:56FF:FE99:29'
+            GatewayV6 = '2001:420:2cff:e:322::1'
+            NetmaskV6 = '64'
+            PrefixV6 = 'fc00::34'
+
+        class Performance(object):
+            Destination = '1.0.60.0'
+            DHCP = '1.0.60.2'
+            DNS = '1.0.60.2'
+            Domain = 'outside.com'
+            Gateway = '1.0.60.1'
+            Netmask = '255.255.255.0'
+            Prefix = '1.0.60'
+            Vlan = '60'
+
+        class Vlan16(object):
+            Destination = '10.86.116.0'
+            DHCP = '10.86.120.6'
+            DNS = '10.86.120.6'
+            Domain = 'cisco.com'
+            Gateway = '10.86.116.1'
+            Netmask = '255.255.252.0'
+            Prefix = '10.86.11' # Can be 10.86.116 to 10.86.119.254
+            Vlan = '16'
+
+################################################################################
+#
+# AnyConnect - Cisco AnyConnect VPN Client - Automation Configuration
+#
+################################################################################
+class AnyConnect_config(_config):
+    SERVICE_PROG_NAME     = 'vpnagent.exe'
+    NAM_SERVICE_NAME      = 'nam'
+    GUI_PROG_NAME         = 'vpnui.exe'
+    VPN_MANIFEST_NAME     = 'VPNManifest.dat'
+
+    PHONE_HOME_PLUGIN_NAME = "acphonehome.dll"
+
+    # log file generate by vpnapi
+    if HOST_INFO.isWindows():
+        VPNAPI_DEBUG_LOCATION = os.path.join(os.path.dirname(__file__),'temp','vpnapi_debug.txt')
+        SERVICE_NAME          = 'vpnagent'
+    elif HOST_INFO.isMac():
+        VPNAPI_DEBUG_LOCATION = '/tmp/vpnapi_debug.txt'
+        SERVICE_NAME          = 'com.cisco.anyconnect.vpnagentd'
+    else:
+        VPNAPI_DEBUG_LOCATION = '/tmp/vpnapi_debug.txt'
+        SERVICE_NAME          = 'vpnagentd_init'
+
+    # PING IP Addresses
+    PING_INSIDE_ADDRESS                = _config.DEATHSTAR_INSIDE_IP
+    PING_INSIDE_ADDRESS_V6             = _config.DEATHSTAR_INSIDE_IP_V6
+    PING_DIRTY_INSIDE_ADDRESS          = '10.10.0.14'
+    # The IP address of the network gateway
+    PING_OUTSIDE_ADDRESS               = '10.1.19.1'
+    PING_OUTSIDE_ADDRESS_V6            = '2001:420:2c7f:1027::1'
+    # A well known static Google DNS address is used because ICMP traffic to
+    # the outside interface of the ASA is typically blocked.
+    PING_DIRTY_OUTSIDE_ADDRESS         = '8.8.8.8'
+    # The IP address allowed by the test_splitinclude ACL
+    PING_INCLUDE_ADDRESS               = _config.DEATHSTAR_INSIDE_IP
+    PING_INCLUDE_ADDRESS_V6            = _config.DEATHSTAR_INSIDE_IP_V6
+    PING_DIRTY_INCLUDE_ADDRESS         = PING_DIRTY_INSIDE_ADDRESS
+    # The IP address blocked by the test_splitinclude ACL
+    PING_BLOCKED_INCLUDE_ADDRESS       = '10.1.160.10'
+    PING_BLOCKED_DIRTY_INCLUDE_ADDRESS = '10.10.0.1'
+    # These addresses are used for when the ASA Inside VLAN is dual stacked.
+    PING_BLOCKED_INCLUDE_ADDRESS_V4    = '10.1.160.1'
+    PING_BLOCKED_INCLUDE_ADDRESS_V6    = 'fc31:420:c4:652::1'
+
+    class ASA:
+        class default:
+            ip    = '10.104.44.10'
+            name  = 'auto-vasa1'
+            fqdn  = 'auto-vasa1.cisco.com'
+            md5_hash = '5083260F188ECAC2DDB0BCD5B8AE9FC6'
+
+        class untrusted:
+            ip      = '10.1.24.20'
+            name    = 'auto-asa'
+            fqdn    = 'auto-asa-untrusted-name.outside.com'
+            cert_cn = 'auto-asa.outside.com'
+            md5_hash = '5083260F188ECAC2DDB0BCD5B8AE9FC6'
+
+        class fake:
+            ip    = '10.1.24.250'
+            ipv6   = '2001:420:2c7f:1029:0:0:0:250'
+            name  = 'auto-asa-fake'
+            fqdn  = 'auto-asa-fake.outside.com'
+            fqdnv6 = 'auto-asa-fake-v6.outside.com'
+            fqdnv4v6 = 'auto-asa-fake-dual.outside.com'
+            md5_hash = None
+
+        class fake2:
+            ip    = '10.1.24.251'
+            ipv6   = '2001:420:2c7f:1029:0:0:0:251'
+            name  = 'auto-asa-fake2'
+            fqdn  = 'auto-asa-fake2.outside.com'
+            fqdnv6 = 'auto-asa-fake2-v6.outside.com'
+            fqdnv4v6 = 'auto-asa-fake2-dual.outside.com'
+            md5_hash = None
+
+        class des3_sha1:
+            ip    = '10.1.24.21'
+            name  = 'auto-asa-3des-sha'
+            fqdn  = 'auto-asa-3des-sha.outside.com'
+            md5_hash = 'F2FC8EBA6E651CB93AE07447BCF6F871'
+
+        class aes128:
+            ip    = '10.1.24.22'
+            name  = 'auto-asa-aes128'
+            fqdn  = 'auto-asa-aes128.outside.com'
+            md5_hash = 'A406F855446E179BEC8EC128B7F6EC0A'
+
+        class aes256:
+            ip    = '10.1.24.23'
+            name  = 'auto-asa-aes256'
+            fqdn  = 'auto-asa-aes256.outside.com'
+            md5_hash = 'A053AB798A3A07C46BEE2422D5663F59'
+
+        class des_sha1:
+            ip    = '10.1.24.24'
+            name  = 'auto-asa-des-sha'
+            fqdn  = 'auto-asa-des-sha.outside.com'
+            md5_hash = '85CC2902A3868D01D3E48E3010E28997'
+
+        class rc4_md5:
+            ip    = '10.1.24.25'
+            name  = 'auto-asa-rc4-md5'
+            fqdn  = 'auto-asa-rc4-md5.outside.com'
+            md5_hash = '039A4F66536B88DAF7943F93F206F81F'
+
+        class rc4_sha:
+            ip    = '10.1.24.26'
+            name  = 'auto-asa-rc4-sha'
+            fqdn  = 'auto-asa-rc4-sha.outside.com'
+            md5_hash = '52CAB0AA0454F00E31ADA08B6564F6FF'
+
+        class weblaunch_sanity:
+            ip    = '10.1.24.27'
+            name  = 'auto-asa-weblaunch-sanity'
+            fqdn  = 'auto-asa-weblaunch-sanity.outside.com'
+            md5_hash = 'B8F7376DFA710EA9C706870BB00922FB'
+
+        class weblaunch_regression:
+            name     = 'auto-asa-weblaunch-regression'
+            ip       = '10.1.24.28'
+            ipv6     = '2001:420:2c7f:1029:0:0:0:28'
+            fqdn     = 'auto-asa-weblaunch-regression.outside.com'
+            fqdnv6   = 'auto-asa-weblaunch-regression-v6.outside.com'
+            fqdnv4v6 = 'auto-asa-weblaunch-regression-v4v6.outside.com'
+            md5_hash = '91B152A64D2BE400954E51DE626907CC'
+
+        class sha256:
+            ip    = '10.1.24.29'
+            name  = 'auto-asa-sha256'
+            fqdn  = 'auto-asa-sha256.outside.com'
