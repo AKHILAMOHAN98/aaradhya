@@ -64,6 +64,8 @@ class ServerConnection():
             data   = this.__get(sock,msglen)
             # create the real response message object.
             msg = ResponseMsg(code,command,data)
+            print print 
+            print print
 
         # Windows raises socket.gaierror exceptiosn
         except socket.error, exc:
